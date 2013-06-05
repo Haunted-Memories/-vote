@@ -1,0 +1,17 @@
+@vA me = #7289
+&A.D.VOTE_FREQUENCY                     %vA = The number of seconds required between votes.
+&D.VOTE_FREQUENCY                       %vA = 3600
+
+&A.D.VOTE_REPEAT                        %vA = The minimum number of days required between votes for the same person.
+&D.VOTE_REPEAT                          %vA = 30
+
+&A.D.VOTE_AMOUNT                        %vA = The value of a vote.
+&D.VOTE_AMOUNT                          %vA = 0.2
+
+&A.C.+VOTE                              %VA = The +vote command.  Syntax: +vote <player>=<explanation>
+&C.+VOTE                                %vA = $+vote *=*:@include %!/I.CAST_VOTE; 
+
+&A.I.CAST_VOTE                          %vA = Attempts to cast a vote for a player. %0 is the target, %1 is the explanation.
+&I.CAST_VOTE                            %vA = @assert hassphere(%#, APPROVED) = {@pemit %# = msg(m, +vote, You must be approved to cast a vote.); }; think setq(!, pdb(%#, GM), PDB); think setq(!, sub(secs(), xget(r(PDB), D.LAST_VOTE)), VOTE_RECENCY);@assert gte(r(VOTE_RECENCY), v(D.VOTE_FREQUENCY)) = {@pemit %# = msg(m, +vote, You must wait [first(exptime(sub(v(D.VOTE_FREQUENCY), r(VOTE_RECENCY))))] before voting again.);}; think setq(!, pmatch(%0), TARGET); @assert cand(hastype(r(TARGET), PLAYER), hassphere(r(TARGET), APPROVED)) = {@pemit %# = msg(m, +vote, You can only vote for approved players.); }; @assert not(strmatch(%#, r(TARGET))) = {@pemit %# = msg(m, +vote, You cannot vote for yourself.)}; think setq(!, default(r(PDB)/D.LAST_VOTE_[r(TARGET)], 0), LAST_VOTE_TARGET);think setq(!, sub(secs(), r(LAST_VOTE_TARGET)), VOTE_RECENCY_TARGET); think setq(!, mul(v(D.VOTE_REPEAT), 60, 60, 24), VOTE_REPEAT);@assert gte(r(VOTE_RECENCY_TARGET), r(VOTE_REPEAT)) = {@pemit %# = msg(m, +vote, You must wait [first(exptime(sub(r(VOTE_REPEAT), r(VOTE_RECENCY_TARGET))))] before voting that player again.);}; &D.LAST_VOTE [r(PDB)] = [secs()]; &D.LAST_VOTE_[r(TARGET)] [r(PDB)] = [secs()]; +xp/set [r(TARGET)] = [v(D.VOTE_AMOUNT)] / Vote from %N: %1; @cemit BigBrother = %N casts a +vote for [name(r(TARGET))] with reason: %1.; @pemit %# = msg(m, +vote, You cast a vote for [name(r(TARGET))].); @force [r(TARGET)] = mail/send [r(TARGET)]=Vote from %N/%N has cast a vote for you, rewarding you with 0.2 XP.  They provided the following explanation for their vote:%%r%%r[escape(%1)].
+
++help/create +vote=[ansi(h, Syntax)]%r%b%b+vote <player>=<reason>%r%r[ansi(h, Description)]%r%b%bProvides a small amount of experience to a player to show your appreciation.  Staff and the player will see the reason you gave the reward. You may only reward the same player infrequently, and you may not reward more than one player each hour.
