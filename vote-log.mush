@@ -1,0 +1,1 @@
+&C.+VOTE/LOG #7289 = $+vote/log:@pemit %# = [header(%N's Vote Log)]; @pemit %# = list(lattr(pdb(%#, GM)/D.LAST_VOTE_*), [ljust(name(after(%i0, D.LAST_VOTE_)), 28)][convsecs(xget(pdb(%#, GM), %i0))]); @pemit %#=tail();
